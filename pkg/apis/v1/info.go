@@ -19,6 +19,7 @@ package v1
 import (
 	"github.com/efucloud/http-demo/pkg/apis/filters"
 	"github.com/efucloud/http-demo/pkg/config"
+	"github.com/efucloud/http-demo/vendor/github.com/emicklei/go-restful/v3"
 	"github.com/emicklei/go-restful/v3"
 	"io"
 	"net/http"
@@ -56,6 +57,12 @@ func (r InfoResource) AddWebService(ws *restful.WebService) {
 		To(r.history).
 		Returns(http.StatusOK, "成功", []RequestData{}).
 		Filter(filters.Log))
+	ws.Route(ws.GET("/clear").
+		Doc("清空历史").
+		Notes("清空历史").
+		To(r.clear).
+		Returns(http.StatusOK, "成功", []RequestData{}).
+		Filter(filters.Log))
 	ws.Route(ws.GET(config.APIPrefix+"/{address:*}").
 		Doc("Get").
 		Param(ws.PathParameter("address", "address")).
@@ -72,6 +79,10 @@ func (r InfoResource) AddWebService(ws *restful.WebService) {
 		Returns(http.StatusOK, "成功", RequestData{}).
 		Filter(filters.Log))
 
+}
+func (r InfoResource) clear(req *restful.Request, resp *restful.Response) {
+	histories = []RequestData{}
+	resp.Write([]byte("ok"))
 }
 func (r InfoResource) history(req *restful.Request, resp *restful.Response) {
 	_ = resp.WriteAsJson(histories)
