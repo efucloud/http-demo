@@ -17,9 +17,9 @@ limitations under the License.
 package v1
 
 import (
+	"encoding/json"
 	"github.com/efucloud/http-demo/pkg/apis/filters"
 	"github.com/efucloud/http-demo/pkg/config"
-	"github.com/efucloud/http-demo/vendor/github.com/emicklei/go-restful/v3"
 	"github.com/emicklei/go-restful/v3"
 	"io"
 	"net/http"
@@ -31,7 +31,7 @@ type RequestData struct {
 	RequestURI    string      `json:"requestUri" description:""`
 	RemoteAddr    string      `json:"remoteAddr" description:""`
 	RequestHeader http.Header `json:"requestHeader" description:""`
-	RequestBody   string      `json:"requestBody" description:""`
+	RequestBody   interface{} `json:"requestBody" description:""`
 }
 type Body struct {
 }
@@ -82,7 +82,7 @@ func (r InfoResource) AddWebService(ws *restful.WebService) {
 }
 func (r InfoResource) clear(req *restful.Request, resp *restful.Response) {
 	histories = []RequestData{}
-	resp.Write([]byte("ok"))
+	_, _ = resp.Write([]byte("ok"))
 }
 func (r InfoResource) history(req *restful.Request, resp *restful.Response) {
 	_ = resp.WriteAsJson(histories)
@@ -93,7 +93,12 @@ func (r InfoResource) request(req *restful.Request, resp *restful.Response) {
 	reqData.RemoteAddr = req.Request.RemoteAddr
 	reqData.RequestHeader = req.Request.Header
 	data, _ := io.ReadAll(req.Request.Body)
-	reqData.RequestBody = string(data)
+	var dataIn interface{}
+	if json.Unmarshal(data, &dataIn) == nil {
+		reqData.RequestBody = dataIn
+	} else {
+		reqData.RequestBody = string(data)
+	}
 	histories = append(histories, reqData)
 	_ = resp.WriteAsJson(reqData)
 }
