@@ -1,0 +1,8 @@
+logConfig:
+  compress: false
+  filename: ""
+  localtime: false
+  maxage: 0
+  maxbackups: 0
+  maxsize: 0
+  production: true

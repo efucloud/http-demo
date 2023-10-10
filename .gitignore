@@ -1,0 +1,13 @@
+_output
+vendor
+.idea
+.vscode
+.DS_Store
+build
+*.json
+test
+**/public.pem
+*.db
+oidc-cfg
+flow
+log
